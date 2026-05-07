@@ -1,6 +1,6 @@
 # Memory Agent
 
-A Streamlit web app that wraps a local Ollama LLM (llama3.2) in a self-improving feedback loop. Every time you correct the agent, it stores the failure in ChromaDB; after every 5 failures it uses the LLM itself to reflect and write a lesson; those lessons are then injected into future prompts so the agent gradually gets better — all locally, with zero API costs.
+A Streamlit web app that wraps a local Ollama LLM (llama3.2) in a self-improving feedback loop. Every time you correct the agent, it stores the failure in ChromaDB; after every 5 failures it uses the LLM itself to reflect and write a lesson; those lessons are then injected into future prompts so the agent gradually gets better all locally, with zero API costs.
 
 ## Prerequisites
 
@@ -21,13 +21,13 @@ streamlit run app.py
 > python -m pip install -r requirements.txt
 > python -m streamlit run app.py
 > ```
-> Ollama starts automatically as a background service — you do not need to run `ollama serve` manually. If you see connection errors, open a second terminal and run `ollama serve`.
+> Ollama starts automatically as a background service you do not need to run `ollama serve` manually. If you see connection errors, open a second terminal and run `ollama serve`.
 
 ## How each tab works
 
 **Chat tab:** Type a question and hit Send. The agent retrieves the 3 most relevant past lessons from ChromaDB, injects them into the system prompt, and calls llama3.2. You see the answer plus which lessons (if any) were used. Below the answer, mark it Correct or paste the right answer. That feedback is written back to the interactions collection.
 
-**Memory Browser tab:** Shows all lessons the agent has written to itself, with their error type and an ordinal number. You can also click "Force reflection now" to trigger a reflection cycle immediately — useful for testing before you have accumulated 5 failures organically.
+**Memory Browser tab:** Shows all lessons the agent has written to itself, with their error type and an ordinal number. You can also click "Force reflection now" to trigger a reflection cycle immediately useful for testing before you have accumulated 5 failures organically.
 
 **Learning Curve tab:** Runs a fixed eval set of 50 questions (Python, CS fundamentals, programming concepts, logic). For each question, the agent answers and a second LLM call judges correctness with YES/NO. Results are appended to `eval_history.json` so you can plot accuracy over multiple runs and watch it improve as lessons accumulate.
 
@@ -84,4 +84,4 @@ streamlit run app.py
 
 ## What the learning curve proves
 
-Run the eval once before making any corrections — this is your baseline. Then chat with the agent, submit corrections, and let lessons accumulate. Run the eval again. If the accuracy number goes up, it means the lessons written by the reflection loop are genuinely being retrieved and applied to new questions. The line chart in the Learning Curve tab makes this trend visible over time, giving you a quantitative signal that the memory system is working rather than just storing data.
+Run the eval once before making any corrections this is your baseline. Then chat with the agent, submit corrections, and let lessons accumulate. Run the eval again. If the accuracy number goes up, it means the lessons written by the reflection loop are genuinely being retrieved and applied to new questions. The line chart in the Learning Curve tab makes this trend visible over time, giving you a quantitative signal that the memory system is working rather than just storing data.

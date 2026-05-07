@@ -1,0 +1,352 @@
+[
+  {
+    "id": "q001",
+    "question": "What does list.sort() return?",
+    "expected_answer": "None. It sorts the list in-place and returns None.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q002",
+    "question": "What is the time complexity of dict lookup in Python?",
+    "expected_answer": "O(1) average case due to hash table implementation.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q003",
+    "question": "What is the difference between `is` and `==` in Python?",
+    "expected_answer": "`==` checks value equality; `is` checks identity (same object in memory).",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q004",
+    "question": "What does __init__ do in Python?",
+    "expected_answer": "It is the constructor method called when a new instance of a class is created.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q005",
+    "question": "What is a generator in Python?",
+    "expected_answer": "A generator is a function that uses yield to lazily produce values one at a time, saving memory.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q006",
+    "question": "What does zip() do in Python?",
+    "expected_answer": "zip() combines multiple iterables element-by-element into tuples.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q007",
+    "question": "What does enumerate() do in Python?",
+    "expected_answer": "enumerate() returns an iterator of (index, value) pairs from an iterable.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q008",
+    "question": "What are mutable vs immutable types in Python? Give examples.",
+    "expected_answer": "Mutable types can be changed after creation (e.g., list, dict, set). Immutable types cannot (e.g., int, str, tuple).",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q009",
+    "question": "What does *args do in a Python function?",
+    "expected_answer": "*args allows a function to accept any number of positional arguments as a tuple.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q010",
+    "question": "What does **kwargs do in a Python function?",
+    "expected_answer": "**kwargs allows a function to accept any number of keyword arguments as a dictionary.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q011",
+    "question": "What is the difference between a list and a tuple in Python?",
+    "expected_answer": "Lists are mutable and use square brackets; tuples are immutable and use parentheses.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q012",
+    "question": "What is a decorator in Python?",
+    "expected_answer": "A decorator is a function that wraps another function to add behavior without modifying its source code.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q013",
+    "question": "What does range() return in Python 3?",
+    "expected_answer": "A range object (lazy sequence), not a list.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q014",
+    "question": "What is None in Python?",
+    "expected_answer": "None is Python's null value, representing the absence of a value. It is a singleton of type NoneType.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q015",
+    "question": "What does the `pass` statement do in Python?",
+    "expected_answer": "pass is a no-op placeholder that does nothing; used where a statement is syntactically required but no action is needed.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q016",
+    "question": "What is the time complexity of binary search?",
+    "expected_answer": "O(log n) — it halves the search space at each step.",
+    "category": "cs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q017",
+    "question": "What is a stack?",
+    "expected_answer": "A stack is a LIFO (last-in, first-out) data structure supporting push and pop operations.",
+    "category": "cs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q018",
+    "question": "What is a queue?",
+    "expected_answer": "A queue is a FIFO (first-in, first-out) data structure supporting enqueue and dequeue operations.",
+    "category": "cs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q019",
+    "question": "What is a linked list?",
+    "expected_answer": "A linked list is a sequence of nodes where each node stores data and a pointer to the next node.",
+    "category": "cs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q020",
+    "question": "What is the difference between BFS and DFS?",
+    "expected_answer": "BFS explores neighbors level by level using a queue; DFS explores as deep as possible using a stack or recursion.",
+    "category": "cs",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q021",
+    "question": "What does Big-O notation measure?",
+    "expected_answer": "Big-O notation describes the upper bound of an algorithm's time or space complexity as input size grows.",
+    "category": "cs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q022",
+    "question": "What is the time complexity of bubble sort?",
+    "expected_answer": "O(n²) in the worst and average case.",
+    "category": "cs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q023",
+    "question": "What is a hash table?",
+    "expected_answer": "A hash table maps keys to values using a hash function, enabling O(1) average-case lookups, inserts, and deletes.",
+    "category": "cs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q024",
+    "question": "What is recursion?",
+    "expected_answer": "Recursion is when a function calls itself with a smaller subproblem until reaching a base case.",
+    "category": "cs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q025",
+    "question": "What is a binary tree?",
+    "expected_answer": "A binary tree is a tree data structure where each node has at most two children: left and right.",
+    "category": "cs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q026",
+    "question": "What is a heap?",
+    "expected_answer": "A heap is a complete binary tree satisfying the heap property: in a min-heap, each parent is smaller than its children.",
+    "category": "cs",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q027",
+    "question": "What is dynamic programming?",
+    "expected_answer": "Dynamic programming solves problems by breaking them into overlapping subproblems and storing results to avoid recomputation.",
+    "category": "cs",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q028",
+    "question": "What is memoization?",
+    "expected_answer": "Memoization caches the results of expensive function calls so repeated calls with the same inputs return instantly.",
+    "category": "cs",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q029",
+    "question": "What is the space complexity of merge sort?",
+    "expected_answer": "O(n) — it requires auxiliary space proportional to the input size for merging.",
+    "category": "cs",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q030",
+    "question": "What is an AVL tree?",
+    "expected_answer": "An AVL tree is a self-balancing binary search tree where the height difference between left and right subtrees is at most 1.",
+    "category": "cs",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q031",
+    "question": "What is a closure in programming?",
+    "expected_answer": "A closure is a function that captures variables from its enclosing scope even after that scope has exited.",
+    "category": "programming",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q032",
+    "question": "What is a deadlock?",
+    "expected_answer": "A deadlock occurs when two or more processes are each waiting for the other to release a resource, causing indefinite blocking.",
+    "category": "programming",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q033",
+    "question": "What is a race condition?",
+    "expected_answer": "A race condition occurs when two threads access shared data concurrently and the outcome depends on execution order.",
+    "category": "programming",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q034",
+    "question": "What is REST?",
+    "expected_answer": "REST (Representational State Transfer) is an architectural style for APIs using HTTP methods (GET, POST, PUT, DELETE) and stateless communication.",
+    "category": "programming",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q035",
+    "question": "What is an API?",
+    "expected_answer": "An API (Application Programming Interface) is a set of rules that allows different software systems to communicate with each other.",
+    "category": "programming",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q036",
+    "question": "What is Git?",
+    "expected_answer": "Git is a distributed version control system that tracks changes to files and enables collaboration on code.",
+    "category": "programming",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q037",
+    "question": "What is a Docker container?",
+    "expected_answer": "A Docker container is a lightweight, isolated runtime environment that packages an application with its dependencies.",
+    "category": "programming",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q038",
+    "question": "What is a virtual environment in Python?",
+    "expected_answer": "A virtual environment is an isolated Python installation with its own packages, preventing conflicts between projects.",
+    "category": "programming",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q039",
+    "question": "What is a compiler?",
+    "expected_answer": "A compiler translates source code into machine code or bytecode before execution.",
+    "category": "programming",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q040",
+    "question": "What is an interpreter?",
+    "expected_answer": "An interpreter executes source code line by line at runtime without a prior compilation step.",
+    "category": "programming",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q041",
+    "question": "If A implies B, and B is false, what can we conclude about A?",
+    "expected_answer": "A must be false. This is the logical rule of modus tollens: if A→B and ¬B, then ¬A.",
+    "category": "logic",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q042",
+    "question": "What is the next number in the sequence: 2, 4, 8, 16?",
+    "expected_answer": "32. Each number is doubled (multiplied by 2).",
+    "category": "logic",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q043",
+    "question": "If a function runs in O(n) time and n doubles, how does runtime change?",
+    "expected_answer": "The runtime doubles — O(n) grows linearly with input size.",
+    "category": "logic",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q044",
+    "question": "A sorted array has 1024 elements. How many steps does binary search take at most?",
+    "expected_answer": "10 steps. Binary search takes at most log₂(n) steps, and log₂(1024) = 10.",
+    "category": "logic",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q045",
+    "question": "If P and Q are both true, what is P AND Q?",
+    "expected_answer": "True. AND returns True only when both operands are True.",
+    "category": "logic",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q046",
+    "question": "What is the output of: print(type([])) in Python?",
+    "expected_answer": "<class 'list'>",
+    "category": "logic",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q047",
+    "question": "If a list has 5 elements, what is the index of the last element?",
+    "expected_answer": "4. Python uses zero-based indexing, so the last index is len(list) - 1 = 4.",
+    "category": "logic",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q048",
+    "question": "What is 2 to the power of 10?",
+    "expected_answer": "1024.",
+    "category": "logic",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q049",
+    "question": "If a recursive function has no base case, what happens?",
+    "expected_answer": "It recurses infinitely until a stack overflow (RecursionError in Python).",
+    "category": "logic",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q050",
+    "question": "What is the boolean result of: not True?",
+    "expected_answer": "False.",
+    "category": "logic",
+    "difficulty": "easy"
+  }
+]

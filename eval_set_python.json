@@ -1,0 +1,142 @@
+[
+  {
+    "id": "py001",
+    "question": "What is the mutable default argument trap in Python?",
+    "expected_answer": "Using a mutable object (like a list or dict) as a default argument creates one shared object for all calls. Mutations persist across calls unexpectedly. Use None as the default and create a new object inside the function.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py002",
+    "question": "How do decorators work in Python?",
+    "expected_answer": "A decorator is a function that takes another function, wraps it with additional behavior, and returns the wrapper. The @syntax is syntactic sugar for func = decorator(func).",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py003",
+    "question": "What is a context manager and how does the 'with' statement work?",
+    "expected_answer": "A context manager defines __enter__ and __exit__ methods. The 'with' statement calls __enter__ on entry and __exit__ on exit (even if an exception occurs), enabling automatic resource cleanup.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py004",
+    "question": "What is the difference between __str__ and __repr__ in Python?",
+    "expected_answer": "__str__ returns a human-readable string for end users; __repr__ returns an unambiguous string intended for developers, ideally one that can recreate the object.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py005",
+    "question": "What is the difference between @staticmethod and @classmethod?",
+    "expected_answer": "@staticmethod has no access to class or instance — it's a plain function in the class namespace. @classmethod receives the class (cls) as its first argument and can access or modify class state.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py006",
+    "question": "How does Python's garbage collection work?",
+    "expected_answer": "Python uses reference counting as its primary mechanism — objects are freed when their count reaches zero. A cyclic garbage collector handles reference cycles that reference counting cannot detect.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py007",
+    "question": "What does __slots__ do in a Python class?",
+    "expected_answer": "__slots__ replaces the per-instance __dict__ with a fixed set of attributes, reducing memory usage and slightly improving attribute access speed.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py008",
+    "question": "What is the difference between copy.copy() and copy.deepcopy()?",
+    "expected_answer": "copy.copy() creates a shallow copy — the new object shares references to nested objects. copy.deepcopy() recursively copies all nested objects so nothing is shared.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py009",
+    "question": "What is a metaclass in Python?",
+    "expected_answer": "A metaclass is the class of a class — it controls how classes themselves are created. The default metaclass is 'type'. Metaclasses can customise class creation, attribute access, and inheritance.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py010",
+    "question": "How does Python resolve method resolution order (MRO) in multiple inheritance?",
+    "expected_answer": "Python uses the C3 linearisation algorithm (MRO). It searches classes left-to-right, depth-first, but ensures a class always appears before its parents. You can inspect it with ClassName.__mro__.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py011",
+    "question": "What do __enter__ and __exit__ do in a context manager?",
+    "expected_answer": "__enter__ is called when entering a 'with' block and its return value is bound to the 'as' variable. __exit__ is called on exit and receives exception info — returning True suppresses the exception.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py012",
+    "question": "What does functools.wraps do and why does it matter?",
+    "expected_answer": "functools.wraps copies the wrapped function's metadata (__name__, __doc__, etc.) onto the wrapper. Without it, the wrapper's identity replaces the original, breaking introspection and documentation.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py013",
+    "question": "What is the difference between @property and a regular method?",
+    "expected_answer": "@property allows a method to be accessed like an attribute (no parentheses). It enables computed attributes with optional setter/deleter, and encapsulates logic behind attribute-style access.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py014",
+    "question": "What does __all__ in a Python module do?",
+    "expected_answer": "__all__ is a list of public names exported when 'from module import *' is used. It does not affect explicit imports but documents the module's public API.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py015",
+    "question": "How does Python's import system work at a high level?",
+    "expected_answer": "Python searches sys.modules first (cache). If not found, it searches sys.path directories in order for the module file, executes it, and caches the result in sys.modules.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py016",
+    "question": "What is duck typing in Python?",
+    "expected_answer": "Duck typing means Python checks for the presence of methods or attributes at runtime rather than requiring a specific type. If an object has the right methods, it can be used regardless of its class.",
+    "category": "python",
+    "difficulty": "easy"
+  },
+  {
+    "id": "py017",
+    "question": "What is monkey patching?",
+    "expected_answer": "Monkey patching is dynamically modifying a class or module at runtime, typically replacing methods or attributes. It is useful for testing but can make code hard to understand and maintain.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py018",
+    "question": "How does a list comprehension differ from a generator expression in memory usage?",
+    "expected_answer": "A list comprehension builds the entire list in memory at once. A generator expression is lazy — it yields items one at a time, using O(1) memory regardless of the sequence length.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py019",
+    "question": "What does 'yield from' do in Python?",
+    "expected_answer": "'yield from' delegates to a sub-generator, transparently forwarding values, exceptions, and the return value. It simplifies composing generators and is required for proper generator-based coroutines.",
+    "category": "python",
+    "difficulty": "medium"
+  },
+  {
+    "id": "py020",
+    "question": "What is the walrus operator := and when should you use it?",
+    "expected_answer": "The walrus operator assigns a value to a variable as part of an expression. It is useful to avoid computing a value twice, especially in while loops or comprehension conditions.",
+    "category": "python",
+    "difficulty": "medium"
+  }
+]

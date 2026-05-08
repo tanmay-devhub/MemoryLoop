@@ -1,20 +1,35 @@
+from datetime import datetime
+
 import pandas as pd
 import streamlit as st
 
 from agent import run_agent
-from eval import compile_results, evaluate_single, get_eval_history, load_eval_questions, save_eval_result
+from eval import (
+    EVAL_SETS,
+    compile_results,
+    evaluate_single,
+    get_eval_history,
+    load_eval_questions,
+    save_eval_result,
+)
 from memory import (
+    get_active_lessons_count,
     get_all_lessons,
+    get_archived_lessons_count,
+    get_confidence_stats,
+    get_error_breakdown,
     get_interaction_count,
     get_lesson_count,
-    store_interaction,
+    get_lessons_by_error_type,
+    run_decay_check,
     update_interaction_outcome,
+    update_lesson_usage,
 )
 from reflection import reflect, should_reflect
 
 st.set_page_config(page_title="Memory Agent", page_icon="🧠", layout="wide")
 
-# --- Session state init ---
+# ── session state ─────────────────────────────────────────────────────────────
 if "interaction_id" not in st.session_state:
     st.session_state.interaction_id = None
 if "last_answer" not in st.session_state:
@@ -23,10 +38,23 @@ if "last_query" not in st.session_state:
     st.session_state.last_query = None
 if "lessons_used" not in st.session_state:
     st.session_state.lessons_used = []
+if "lesson_ids_used" not in st.session_state:
+    st.session_state.lesson_ids_used = []
 if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = False
+if "current_confidence" not in st.session_state:
+    st.session_state.current_confidence = None
 
-# --- Sidebar ---
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+def _fmt_date(iso_str: str) -> str:
+    try:
+        return datetime.fromisoformat(iso_str).strftime("%b %d, %Y %H:%M")
+    except Exception:
+        return iso_str or "Never"
+
+
+# ── sidebar ───────────────────────────────────────────────────────────────────
 st.sidebar.title("Memory Agent")
 st.sidebar.metric("Total Interactions", get_interaction_count())
 st.sidebar.metric("Total Lessons", get_lesson_count())
@@ -36,10 +64,10 @@ st.sidebar.info(
     "open PowerShell and run: ollama serve"
 )
 
-# --- Tabs ---
+# ── tabs ──────────────────────────────────────────────────────────────────────
 tab_chat, tab_memory, tab_eval = st.tabs(["Chat", "Memory Browser", "Learning Curve"])
 
-# ── TAB 1: Chat ──────────────────────────────────────────────────────────────
+# ── TAB 1: Chat ───────────────────────────────────────────────────────────────
 with tab_chat:
     st.subheader("Chat with memory")
 
@@ -54,6 +82,8 @@ with tab_chat:
             st.session_state.last_answer = result["answer"]
             st.session_state.interaction_id = result["interaction_id"]
             st.session_state.lessons_used = result["lessons_used"]
+            st.session_state.lesson_ids_used = result["lesson_ids_used"]
+            st.session_state.current_confidence = result["confidence"]
             st.session_state.last_query = query
             st.session_state.feedback_given = False
 
@@ -61,10 +91,21 @@ with tab_chat:
         with st.chat_message("assistant"):
             st.write(st.session_state.last_answer)
 
+        # confidence display
+        if st.session_state.current_confidence is not None:
+            conf = st.session_state.current_confidence
+            if conf >= 0.8:
+                st.success(f"Confidence: {conf:.0%}")
+            elif conf >= 0.5:
+                st.info(f"Confidence: {conf:.0%}")
+            else:
+                st.warning(f"Confidence: {conf:.0%}")
+            st.progress(conf, text="Agent confidence")
+
         with st.expander("Memories used in this response"):
             if st.session_state.lessons_used:
                 for lesson in st.session_state.lessons_used:
-                    st.markdown(f"- {lesson}")
+                    st.markdown(f"- {lesson['content']}")
             else:
                 st.caption("No memories retrieved yet — keep chatting and correcting")
 
@@ -78,24 +119,47 @@ with tab_chat:
                     update_interaction_outcome(
                         st.session_state.interaction_id, outcome="correct"
                     )
+                    for lid in st.session_state.lesson_ids_used:
+                        update_lesson_usage(lid, was_helpful=True)
                     st.session_state.feedback_given = True
                     st.success("Logged!")
                     st.rerun()
 
             with col2:
-                correction = st.text_input("Type the correct answer:", key="correction_input")
+                error_type = st.selectbox(
+                    "What type of error was this?",
+                    options=[
+                        "factual_error",
+                        "incomplete_answer",
+                        "wrong_complexity",
+                        "hallucination",
+                    ],
+                    format_func=lambda x: {
+                        "factual_error": "Factual error — stated something wrong",
+                        "incomplete_answer": "Incomplete — missing key details",
+                        "wrong_complexity": "Wrong complexity — incorrect Big-O",
+                        "hallucination": "Hallucination — made something up",
+                    }[x],
+                    key="error_type_select",
+                )
+                correction = st.text_input(
+                    "Type the correct answer:", key="correction_input"
+                )
                 if st.button("Submit correction", type="secondary"):
                     if correction.strip():
                         update_interaction_outcome(
                             st.session_state.interaction_id,
                             outcome="corrected",
                             correction=correction.strip(),
+                            error_type=error_type,
                         )
+                        for lid in st.session_state.lesson_ids_used:
+                            update_lesson_usage(lid, was_helpful=False)
                         st.session_state.feedback_given = True
 
                         if should_reflect():
                             with st.spinner("Reflecting on recent failures..."):
-                                lesson = reflect()
+                                lesson = reflect(error_type=error_type)
                             if lesson:
                                 st.success(f"New lesson learned: {lesson}")
                         else:
@@ -104,18 +168,80 @@ with tab_chat:
                     else:
                         st.warning("Please type a correction before submitting.")
 
-# ── TAB 2: Memory Browser ────────────────────────────────────────────────────
+# ── TAB 2: Memory Browser ─────────────────────────────────────────────────────
 with tab_memory:
     st.subheader("Memory Browser")
 
-    col1, col2 = st.columns(2)
-    col1.metric("Lessons learned", get_lesson_count())
-    col2.metric("Interactions logged", get_interaction_count())
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Lessons learned", get_lesson_count())
+    c2.metric("Interactions logged", get_interaction_count())
+    c3.metric("Active Lessons", get_active_lessons_count())
+    c4.metric("Archived Lessons", get_archived_lessons_count())
 
+    # ── confidence analysis ───────────────────────────────────────────────────
+    st.divider()
+    st.subheader("Confidence Analysis")
+    stats = get_confidence_stats()
+    if stats["total_scored"] == 0:
+        st.caption("No scored interactions yet. Mark responses as correct or incorrect in the Chat tab.")
+    else:
+        sc1, sc2, sc3, sc4 = st.columns(4)
+        sc1.metric(
+            "Avg confidence (correct)",
+            f"{stats['avg_confidence_correct']:.0%}",
+        )
+        sc2.metric(
+            "Avg confidence (wrong)",
+            f"{stats['avg_confidence_incorrect']:.0%}",
+        )
+        sc3.metric(
+            "Overconfident errors",
+            stats["overconfident_count"],
+            help="Answered with >70% confidence but was wrong",
+        )
+        sc4.metric(
+            "Underconfident correct",
+            stats["underconfident_count"],
+            help="Answered with <40% confidence but was right",
+        )
+        st.caption(
+            "Overconfident errors are the most dangerous: the agent was certain but wrong. "
+            "Focus corrections on those patterns first."
+        )
+
+    # ── error breakdown ───────────────────────────────────────────────────────
+    st.divider()
+    st.subheader("Error Breakdown")
+    breakdown = get_error_breakdown()
+    if any(v > 0 for v in breakdown.values()):
+        df_bd = pd.DataFrame(
+            {"Count": list(breakdown.values())},
+            index=list(breakdown.keys()),
+        )
+        st.bar_chart(df_bd)
+        most_common = max(breakdown.items(), key=lambda x: x[1])
+        st.caption(
+            f"Most common error: **{most_common[0]}** ({most_common[1]} times)"
+        )
+    else:
+        st.caption("No corrections submitted yet.")
+
+    # ── lessons ───────────────────────────────────────────────────────────────
     st.divider()
     st.subheader("All lessons")
 
-    lessons = get_all_lessons()
+    filter_type = st.selectbox(
+        "Filter by error type:",
+        options=["All", "factual_error", "incomplete_answer", "wrong_complexity", "hallucination"],
+        key="lesson_filter",
+    )
+
+    lessons = (
+        get_all_lessons()
+        if filter_type == "All"
+        else get_lessons_by_error_type(filter_type)
+    )
+
     if not lessons:
         st.info(
             "No lessons yet. Go to the Chat tab, ask questions, and submit "
@@ -124,65 +250,140 @@ with tab_memory:
     else:
         for i, lesson in enumerate(lessons):
             with st.container(border=True):
-                st.markdown(f"**Lesson {i + 1}**")
+                header_col, badge_col = st.columns([5, 1])
+                with header_col:
+                    st.markdown(f"**Lesson {i + 1}**")
+                with badge_col:
+                    if not lesson.get("is_active", True):
+                        st.caption("archived")
                 st.write(lesson["content"])
-                st.caption(f"Type: {lesson.get('error_type', 'general')}")
+                st.progress(
+                    lesson["usefulness_score"],
+                    text=f"Usefulness: {lesson['usefulness_score']:.2f}",
+                )
+                st.caption(
+                    f"Type: {lesson.get('error_type', 'general')}  ·  "
+                    f"Retrieved {lesson['times_retrieved']} times  ·  "
+                    f"Last used: {_fmt_date(lesson['last_used_at'])}"
+                )
 
     st.divider()
+
+    if st.button("Run decay check"):
+        decay_result = run_decay_check()
+        st.info(
+            f"Checked {decay_result['checked']} lessons. "
+            f"Archived: {decay_result['archived']}. "
+            f"Kept active: {decay_result['kept']}."
+        )
+
     if st.button("Force reflection now (for testing)"):
         with st.spinner("Reflecting on recent failures..."):
-            result = reflect()
-        if result:
-            st.success(f"Lesson generated: {result}")
+            forced = reflect()
+        if forced:
+            st.success(f"Lesson generated: {forced}")
         else:
             st.warning("Not enough failures yet (need at least 3 corrections)")
 
-# ── TAB 3: Learning Curve ────────────────────────────────────────────────────
+# ── TAB 3: Learning Curve ─────────────────────────────────────────────────────
 with tab_eval:
     st.subheader("Learning Curve")
 
     st.info(
-        "The eval set contains 50 fixed questions about Python, CS fundamentals, "
-        "programming concepts, and logic. Run it multiple times — after each round of "
-        "corrections — to see if accuracy improves. That improvement is proof the "
-        "memory system is working."
+        "Each eval set tests a specific domain. Run the same set multiple times — "
+        "after submitting corrections — to watch accuracy improve. "
+        "That improvement is proof the memory system is working."
     )
     st.warning(
-        "Running the eval takes 3-5 minutes — Ollama answers 50 questions "
-        "plus judges each one."
+        "Each run takes 3-5 minutes for the 50-question set, "
+        "or ~1-2 minutes for the 20-question sets."
     )
 
-    if st.button("Run full eval set"):
-        questions = load_eval_questions()
-        progress = st.progress(0)
-        status = st.empty()
-        results = []
+    selected_eval = st.selectbox(
+        "Choose eval set:",
+        options=list(EVAL_SETS.keys()),
+        key="selected_eval_set",
+    )
 
-        for i, q in enumerate(questions):
-            status.text(
-                f"Evaluating question {i + 1} of {len(questions)}: {q['question'][:50]}..."
-            )
-            single = evaluate_single(q)
-            results.append(single)
-            progress.progress((i + 1) / len(questions))
+    if st.button("Run selected eval"):
+        questions = load_eval_questions(selected_eval)
+        if not questions:
+            st.error(f"Could not load eval set: {selected_eval}")
+        else:
+            progress = st.progress(0)
+            status = st.empty()
+            results = []
+            for i, q in enumerate(questions):
+                status.text(
+                    f"Evaluating question {i + 1} of {len(questions)}: "
+                    f"{q['question'][:50]}..."
+                )
+                results.append(evaluate_single(q))
+                progress.progress((i + 1) / len(questions))
+            final = compile_results(results, selected_eval)
+            save_eval_result(final)
+            status.empty()
+            progress.empty()
+            st.success(f"Eval complete! Accuracy: {final['accuracy'] * 100:.1f}%")
+            st.metric("Correct answers", f"{final['correct']} / {final['total']}")
 
-        final = compile_results(results)
-        save_eval_result(final)
-        status.empty()
-        progress.empty()
-
-        st.success(f"Eval complete! Accuracy: {final['accuracy'] * 100:.1f}%")
-        st.metric("Correct answers", f"{final['correct']} / {final['total']}")
-
+    # ── history tabs ──────────────────────────────────────────────────────────
     history = get_eval_history()
     if history:
-        st.subheader("Accuracy over time")
-        df = pd.DataFrame(history)
-        df["run"] = range(1, len(df) + 1)
-        st.line_chart(df.set_index("run")["accuracy"])
-        st.dataframe(
-            df[["run", "timestamp", "accuracy", "correct", "total"]],
-            hide_index=True,
-        )
+        by_set: dict[str, list[dict]] = {}
+        for record in history:
+            name = record.get("eval_set_name", "General (50 questions)")
+            by_set.setdefault(name, []).append(record)
+
+        tab_labels = list(by_set.keys()) + ["Compare All"]
+        hist_tabs = st.tabs(tab_labels)
+
+        for i, (set_name, records) in enumerate(by_set.items()):
+            with hist_tabs[i]:
+                st.subheader(f"Accuracy over time — {set_name}")
+                df = pd.DataFrame(records)
+                df["run"] = range(1, len(df) + 1)
+                st.line_chart(df.set_index("run")["accuracy"])
+                st.dataframe(
+                    df[["run", "timestamp", "accuracy", "correct", "total"]],
+                    hide_index=True,
+                )
+
+        with hist_tabs[-1]:
+            st.subheader("Compare all eval sets")
+            max_runs = max(len(v) for v in by_set.values())
+            compare_data: dict[str, list] = {}
+            for name, records in by_set.items():
+                accs = [r["accuracy"] for r in records]
+                compare_data[name] = accs + [None] * (max_runs - len(accs))
+            df_compare = pd.DataFrame(compare_data, index=range(1, max_runs + 1))
+            df_compare.index.name = "run"
+            st.line_chart(df_compare)
+
+        # ── weakness analysis ─────────────────────────────────────────────────
+        st.divider()
+        st.subheader("Topic Weakness Analysis")
+        latest_by_set: dict[str, float] = {}
+        for record in history:
+            latest_by_set[record.get("eval_set_name", "General (50 questions)")] = record["accuracy"]
+
+        metric_cols = st.columns(len(EVAL_SETS))
+        for idx, (name, _) in enumerate(EVAL_SETS.items()):
+            with metric_cols[idx]:
+                short = name.split("(")[0].strip()
+                if name in latest_by_set:
+                    st.metric(short, f"{latest_by_set[name]:.0%}")
+                else:
+                    st.caption(f"**{short}**")
+                    st.caption("Not yet evaluated")
+
+        if latest_by_set:
+            weakest_name, weakest_acc = min(latest_by_set.items(), key=lambda x: x[1])
+            st.error(
+                f"Weakest topic: **{weakest_name}** at {weakest_acc:.0%} — "
+                "focus your corrections here for fastest improvement"
+            )
+        else:
+            st.info("Run all eval sets to see weakness analysis")
     else:
-        st.caption("No eval runs yet. Click the button above to run your first eval.")
+        st.caption("No eval runs yet. Choose an eval set above and click Run.")

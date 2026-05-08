@@ -1,0 +1,142 @@
+[
+  {
+    "id": "sys001",
+    "question": "What does CAP theorem stand for?",
+    "expected_answer": "Consistency, Availability, and Partition tolerance — a distributed system can guarantee at most two of the three simultaneously.",
+    "category": "systems",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sys002",
+    "question": "What is a load balancer?",
+    "expected_answer": "A load balancer distributes incoming network traffic across multiple servers to prevent any single server from becoming a bottleneck.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys003",
+    "question": "What is the key difference between SQL and NoSQL databases?",
+    "expected_answer": "SQL databases use structured schemas and relational tables with ACID guarantees; NoSQL databases use flexible schemas (document, key-value, graph, etc.) and often trade consistency for scalability.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys004",
+    "question": "What is database sharding?",
+    "expected_answer": "Sharding splits a database horizontally across multiple machines, where each shard holds a subset of the data, enabling horizontal scaling.",
+    "category": "systems",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sys005",
+    "question": "What is a CDN?",
+    "expected_answer": "A Content Delivery Network is a geographically distributed group of servers that cache content close to users to reduce latency.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys006",
+    "question": "What is eventual consistency?",
+    "expected_answer": "Eventual consistency guarantees that if no new updates are made to a data item, all replicas will eventually converge to the same value — but reads may return stale data in the interim.",
+    "category": "systems",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sys007",
+    "question": "What is a message queue and what problem does it solve?",
+    "expected_answer": "A message queue decouples producers and consumers by buffering messages asynchronously, enabling systems to handle spikes in load and allowing independent scaling.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys008",
+    "question": "What is the difference between horizontal and vertical scaling?",
+    "expected_answer": "Vertical scaling adds more resources (CPU, RAM) to an existing machine; horizontal scaling adds more machines to distribute the load.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys009",
+    "question": "What is a reverse proxy?",
+    "expected_answer": "A reverse proxy sits in front of backend servers and forwards client requests to them, hiding server details and enabling load balancing, SSL termination, and caching.",
+    "category": "systems",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sys010",
+    "question": "What is rate limiting?",
+    "expected_answer": "Rate limiting restricts how many requests a client can make in a given time window to prevent abuse and protect server resources.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys011",
+    "question": "What is the key difference between REST and GraphQL?",
+    "expected_answer": "REST uses multiple fixed endpoints that return predefined data shapes; GraphQL uses a single endpoint where clients specify exactly what data they need.",
+    "category": "systems",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sys012",
+    "question": "What is a microservice?",
+    "expected_answer": "A microservice is a small, independently deployable service that handles a single business capability and communicates with other services over a network.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys013",
+    "question": "What is database indexing and why does it help?",
+    "expected_answer": "A database index is a data structure (typically a B-tree) that speeds up row lookups at the cost of additional storage and slower writes.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys014",
+    "question": "What is caching and what problem does it solve?",
+    "expected_answer": "Caching stores copies of frequently accessed data in fast storage (e.g., RAM) to reduce latency and database load for repeated reads.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys015",
+    "question": "What does ACID stand for in databases?",
+    "expected_answer": "Atomicity, Consistency, Isolation, and Durability — properties that guarantee database transactions are processed reliably.",
+    "category": "systems",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sys016",
+    "question": "What is a database transaction?",
+    "expected_answer": "A transaction is a sequence of database operations treated as a single unit — either all operations succeed (commit) or all are rolled back (abort).",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys017",
+    "question": "What is a deadlock in databases?",
+    "expected_answer": "A deadlock occurs when two transactions each hold a lock the other needs, causing both to wait indefinitely.",
+    "category": "systems",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sys018",
+    "question": "What is connection pooling?",
+    "expected_answer": "Connection pooling maintains a cache of reusable database connections to avoid the overhead of creating a new connection for every request.",
+    "category": "systems",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sys019",
+    "question": "What is the difference between a primary key and a foreign key?",
+    "expected_answer": "A primary key uniquely identifies each row in a table; a foreign key is a field in one table that references the primary key of another table, enforcing referential integrity.",
+    "category": "systems",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sys020",
+    "question": "What is the key difference between TCP and UDP?",
+    "expected_answer": "TCP is connection-oriented and guarantees ordered, reliable delivery; UDP is connectionless and faster but provides no delivery or ordering guarantees.",
+    "category": "systems",
+    "difficulty": "easy"
+  }
+]

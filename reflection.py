@@ -1,23 +1,13 @@
 import ollama
-from memory import get_recent_failures, get_interaction_count, store_lesson
+from memory import get_failure_count, get_recent_failures, store_lesson
 
 
 def should_reflect() -> bool:
-    try:
-        from memory import _interactions_col
-        if _interactions_col.count() == 0:
-            return False
-        all_items = _interactions_col.get(include=["metadatas"])
-        failure_count = sum(
-            1 for m in all_items["metadatas"]
-            if m.get("outcome") in ("incorrect", "corrected")
-        )
-        return failure_count > 0 and failure_count % 5 == 0
-    except Exception:
-        return False
+    count = get_failure_count()
+    return count > 0 and count % 5 == 0
 
 
-def reflect() -> str | None:
+def reflect(error_type: str = "factual_error") -> str | None:
     failures = get_recent_failures(n=10)
     if len(failures) < 3:
         return None
@@ -29,10 +19,12 @@ def reflect() -> str | None:
         for f in failures
     )
 
+    error_label = error_type.replace("_", " ")
     prompt = (
         "You are a learning AI reviewing your own past mistakes. "
-        "Based on the following failure cases, write ONE concise lesson (2 sentences max) "
-        "that would help you avoid similar mistakes in the future. "
+        f"These are all {error_label} errors. "
+        "Write a lesson specifically about avoiding this type of mistake. "
+        "Write ONE concise lesson (2 sentences max). "
         "Write only the lesson — no preamble, no explanation.\n\n"
         f"{cases}"
     )
@@ -46,5 +38,5 @@ def reflect() -> str | None:
     except Exception:
         return None
 
-    store_lesson(content=lesson_text, error_type="general")
+    store_lesson(content=lesson_text, error_type=error_type)
     return lesson_text

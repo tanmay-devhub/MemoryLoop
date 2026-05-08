@@ -1,0 +1,142 @@
+[
+  {
+    "id": "alg001",
+    "question": "What is the time complexity of binary search?",
+    "expected_answer": "O(log n) — it halves the search space at each step.",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg002",
+    "question": "What is the space complexity of merge sort?",
+    "expected_answer": "O(n) — it requires auxiliary space proportional to the input size.",
+    "category": "algorithms",
+    "difficulty": "medium"
+  },
+  {
+    "id": "alg003",
+    "question": "What is the average-case time complexity of quicksort?",
+    "expected_answer": "O(n log n) on average.",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg004",
+    "question": "What is the worst-case time complexity of quicksort?",
+    "expected_answer": "O(n²) — occurs when the pivot is always the smallest or largest element (e.g., already sorted array with naive pivot).",
+    "category": "algorithms",
+    "difficulty": "medium"
+  },
+  {
+    "id": "alg005",
+    "question": "What is the time complexity of bubble sort in the worst case?",
+    "expected_answer": "O(n²).",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg006",
+    "question": "What is the time complexity of heap sort?",
+    "expected_answer": "O(n log n) in all cases — worst, average, and best.",
+    "category": "algorithms",
+    "difficulty": "medium"
+  },
+  {
+    "id": "alg007",
+    "question": "Is merge sort a stable sorting algorithm?",
+    "expected_answer": "Yes, merge sort is stable — equal elements maintain their original relative order.",
+    "category": "algorithms",
+    "difficulty": "medium"
+  },
+  {
+    "id": "alg008",
+    "question": "Is quicksort a stable sorting algorithm?",
+    "expected_answer": "No, the standard in-place quicksort is not stable.",
+    "category": "algorithms",
+    "difficulty": "medium"
+  },
+  {
+    "id": "alg009",
+    "question": "What data structure does BFS use internally?",
+    "expected_answer": "A queue (FIFO).",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg010",
+    "question": "What data structure does DFS use internally?",
+    "expected_answer": "A stack (LIFO) — either explicitly or via the call stack in recursion.",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg011",
+    "question": "What problem does Dijkstra's algorithm solve?",
+    "expected_answer": "It finds the shortest path from a source node to all other nodes in a weighted graph with non-negative edge weights.",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg012",
+    "question": "What is the time complexity of Dijkstra's algorithm using a min-heap?",
+    "expected_answer": "O((V + E) log V) where V is vertices and E is edges.",
+    "category": "algorithms",
+    "difficulty": "medium"
+  },
+  {
+    "id": "alg013",
+    "question": "In what order does inorder traversal visit nodes in a binary search tree?",
+    "expected_answer": "Left subtree, root, right subtree — which visits nodes in ascending sorted order for a BST.",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg014",
+    "question": "In what order does preorder traversal visit nodes?",
+    "expected_answer": "Root, left subtree, right subtree.",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg015",
+    "question": "In what order does postorder traversal visit nodes?",
+    "expected_answer": "Left subtree, right subtree, root.",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg016",
+    "question": "What is the time complexity of naive recursive Fibonacci (no memoization)?",
+    "expected_answer": "O(2^n) — it recomputes the same subproblems exponentially.",
+    "category": "algorithms",
+    "difficulty": "medium"
+  },
+  {
+    "id": "alg017",
+    "question": "What is the time complexity of Fibonacci computed with dynamic programming?",
+    "expected_answer": "O(n) — each subproblem is computed exactly once.",
+    "category": "algorithms",
+    "difficulty": "easy"
+  },
+  {
+    "id": "alg018",
+    "question": "Is heap sort an in-place sorting algorithm?",
+    "expected_answer": "Yes, heap sort sorts in-place using O(1) extra space.",
+    "category": "algorithms",
+    "difficulty": "medium"
+  },
+  {
+    "id": "alg019",
+    "question": "What is the time complexity of building a heap from an unsorted array?",
+    "expected_answer": "O(n) — heapification can be done in linear time using the bottom-up approach.",
+    "category": "algorithms",
+    "difficulty": "medium"
+  },
+  {
+    "id": "alg020",
+    "question": "What distinguishes dynamic programming from plain recursion?",
+    "expected_answer": "Dynamic programming stores results of subproblems (memoization or tabulation) to avoid redundant recomputation, reducing exponential recursion to polynomial time.",
+    "category": "algorithms",
+    "difficulty": "medium"
+  }
+]

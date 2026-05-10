@@ -8,3 +8,19 @@ dist/
 build/
 .DS_Store
 Thumbs.db
+
+# Gemini and API keys
+*.env
+.env.local
+.env.production
+gemini_key.txt
+api_keys.txt
+
+# Python cache
+.pytest_cache/
+
+# OS files
+desktop.ini
+
+# Streamlit
+.streamlit/secrets.toml

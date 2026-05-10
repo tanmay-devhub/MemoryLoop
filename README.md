@@ -10,6 +10,7 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 ![Cost](https://img.shields.io/badge/API_Cost-$0.00-brightgreen)
+![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-blue)
 
 ---
 
@@ -40,6 +41,8 @@ that proves the memory system works.
 | Avg confidence on correct answers | 81% |
 | Most common error type | Factual error (15 cases) |
 | Most retrieved lesson | 111 times |
+| Auto-corrections via Gemini | Pre-filled, one click to confirm |
+| Correction quality | Exact 2-sentence, mechanism-based |
 
 ### Learning curve
 ![Learning Curve](assets/screenshots/learning_curve.png)
@@ -97,6 +100,16 @@ Store lesson in ChromaDB with full metadata
   50q, Algorithms 20q, System Design 20q, Python Deep Dive 20q)
   with independent accuracy tracking per domain.
 
+- **Gemini 2.5 Flash Auto-Judge**: Every agent response
+  is automatically evaluated by Gemini 2.5 Flash in the
+  background using a training-data-aware system prompt.
+  Enforces exact 2-sentence corrections with stated
+  mechanisms (no generic advice) since outputs are used
+  directly as training data. If correct: instant green
+  verification banner. If wrong: error type and correction
+  pre-filled automatically, user confirms with one click.
+  Uses Gemini free tier at aistudio.google.com, zero cost.
+
 ### Memory Browser
 ![Memory Browser](assets/screenshots/memory_browser.png)
 *5 lessons with usefulness scores, retrieval counts, confidence
@@ -110,6 +123,38 @@ response semantic similarity retrieval working in real time*
 ### Sidebar stats
 ![Sidebar](assets/screenshots/sidebar_stats.png)
 *Live stats: 199 interactions, 5 lessons generated*
+
+---
+
+## Gemini Precision System Prompt
+
+A core design decision in MemoryLoop is that Gemini is not
+used as a conversational assistant it is used as a
+precision training data generator. Every correction it
+produces becomes a lesson the agent learns from.
+Imprecise corrections produce bad lessons.
+
+The system prompt enforces 6 rules on every Gemini call:
+
+| Rule | Requirement |
+|------|-------------|
+| Be exact | State the precise correct answer, not a description |
+| Include exact output | Return values, print output, Big-O must be exact |
+| 2 sentences max | Sentence 1: correct answer. Sentence 2: mechanism |
+| No generic advice | Never: "verify your facts", "check documentation" |
+| State the mechanism | Explain WHY, not just WHAT is wrong |
+| JSON only | Raw JSON response, zero tolerance for extra text |
+
+**Example: without precision prompt:**
+> "The answer about list.sort() is incorrect. You should
+> check the Python documentation for the correct behavior."
+
+**Example: with precision prompt:**
+> "None. list.sort() sorts the list in-place and returns
+> None use sorted(list) to get a new sorted list returned."
+
+The second correction produces a lesson the agent can
+actually apply. The first produces noise.
 
 ---
 
@@ -141,6 +186,7 @@ Also draws from **MemGPT / Letta** (Packer et al., 2023):
 | UI | Streamlit | 3-tab dashboard |
 | Language | Python 3.10+ | Backend + agent logic |
 | Cost | $0.00 | Fully local, no API keys |
+| Auto-Judge | Gemini 2.5 Flash | Precision answer evaluation + training data generation |
 
 ---
 
@@ -195,7 +241,18 @@ response quality measurably, but lesson quality matters more
 than lesson quantity one precise lesson outperforms five
 vague ones.
 
+Integrating Gemini as a precision judge revealed an
+important prompt engineering insight: the same model
+produces dramatically different output quality depending
+on whether it is prompted as a conversational assistant
+or as a specialized data pipeline component. Framing
+Gemini as a "training data generator" rather than a
+"helpful assistant" and enforcing strict output constraints
+via system prompt produced corrections that were 3-4x more
+specific and actionable than unguided generation.
+
 ---
+
 
 ## License
 

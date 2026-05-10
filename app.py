@@ -26,6 +26,8 @@ from memory import (
     update_lesson_usage,
 )
 from reflection import reflect, should_reflect
+from gemini_judge import judge_answer, validate_api_key, is_gemini_configured
+import os
 
 st.set_page_config(
     page_title="MemoryLoop",
@@ -48,6 +50,12 @@ if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = False
 if "current_confidence" not in st.session_state:
     st.session_state.current_confidence = None
+if "gemini_judgment" not in st.session_state:
+    st.session_state.gemini_judgment = None
+if "gemini_key_set" not in st.session_state:
+    st.session_state.gemini_key_set = False
+if "judged_query" not in st.session_state:
+    st.session_state.judged_query = None
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -67,6 +75,37 @@ st.sidebar.info(
     "Ollama runs automatically on Windows. If errors appear, "
     "open PowerShell and run: ollama serve"
 )
+st.sidebar.divider()
+st.sidebar.subheader("Gemini Auto-Judge")
+st.sidebar.caption(
+    "Gemini 2.5 Flash judges every answer automatically "
+    "and pre-fills corrections. One click to confirm."
+)
+gemini_input = st.sidebar.text_input(
+    "Gemini API Key:",
+    type="password",
+    value=os.environ.get("GEMINI_API_KEY", ""),
+    help="Free at aistudio.google.com — no credit card needed",
+    key="gemini_api_input"
+)
+if gemini_input:
+    os.environ["GEMINI_API_KEY"] = gemini_input
+    if not st.session_state.gemini_key_set:
+        st.session_state.gemini_key_set = True
+    st.sidebar.success("Gemini 2.5 Flash ready ✓")
+else:
+    st.sidebar.caption("Add key to enable auto-judgment")
+
+if gemini_input:
+    if st.sidebar.button("Test Gemini key"):
+        with st.sidebar:
+            with st.spinner("Testing..."):
+                valid = validate_api_key(gemini_input)
+            if valid:
+                st.sidebar.success("Gemini 2.5 Flash connected ✓")
+            else:
+                st.sidebar.error("Invalid key. Check aistudio.google.com")
+
 st.sidebar.divider()
 st.sidebar.caption("📚 Based on Reflexion (Stanford, 2023)")
 st.sidebar.caption("💰 Cost: $0.00 — fully local")
@@ -117,6 +156,52 @@ with tab_chat:
             else:
                 st.caption("No memories retrieved yet — keep chatting and correcting")
 
+        # ── Gemini Auto-Judge ──────────────────────────────────────────────────
+        if (st.session_state.last_answer
+                and is_gemini_configured()
+                and not st.session_state.feedback_given):
+
+            query_changed = (
+                st.session_state.get("judged_query")
+                != st.session_state.last_query
+            )
+
+            if (st.session_state.gemini_judgment is None or query_changed):
+                with st.spinner("Gemini 2.5 Flash analyzing answer..."):
+                    judgment = judge_answer(
+                        st.session_state.last_query,
+                        st.session_state.last_answer
+                    )
+                st.session_state.gemini_judgment = judgment
+                st.session_state.judged_query = st.session_state.last_query
+
+            j = st.session_state.gemini_judgment
+
+            if j and j.get("gemini_available"):
+                if j.get("judgment") == "CORRECT":
+                    st.success(
+                        f"✓ Gemini verified: Correct  "
+                        f"(confidence: {j.get('confidence', 0)*100:.0f}%)"
+                    )
+                    st.caption(f"Gemini: {j.get('reasoning', '')}")
+                elif j.get("judgment") == "INCORRECT":
+                    st.error(
+                        "✗ Gemini detected an error — "
+                        "correction pre-filled below. "
+                        "Review and click Submit."
+                    )
+                    st.caption(f"Gemini: {j.get('reasoning', '')}")
+                elif j.get("judgment") is None:
+                    st.caption(
+                        f"⚠ Gemini unavailable: "
+                        f"{j.get('reasoning', 'unknown error')}"
+                    )
+            elif j and not j.get("gemini_available"):
+                st.caption(
+                    "💡 Add Gemini API key in sidebar for auto-judgment"
+                )
+        # ── End Gemini Auto-Judge ──────────────────────────────────────────────
+
         if not st.session_state.feedback_given and st.session_state.interaction_id:
             st.divider()
             st.caption("Was this response correct?")
@@ -134,14 +219,37 @@ with tab_chat:
                     st.rerun()
 
             with col2:
+                j = st.session_state.get("gemini_judgment") or {}
+
+                gemini_wrong = (
+                    j.get("gemini_available")
+                    and j.get("judgment") == "INCORRECT"
+                )
+                suggested_error = j.get("error_type") or "factual_error"
+                suggested_correction = j.get("correction") or ""
+
+                error_options = [
+                    "factual_error",
+                    "incomplete_answer",
+                    "wrong_complexity",
+                    "hallucination"
+                ]
+                default_index = (
+                    error_options.index(suggested_error)
+                    if suggested_error in error_options
+                    else 0
+                )
+
+                if gemini_wrong and suggested_correction:
+                    st.caption(
+                        "✨ Pre-filled by Gemini 2.5 Flash — "
+                        "review and confirm"
+                    )
+
                 error_type = st.selectbox(
                     "What type of error was this?",
-                    options=[
-                        "factual_error",
-                        "incomplete_answer",
-                        "wrong_complexity",
-                        "hallucination",
-                    ],
+                    options=error_options,
+                    index=default_index,
                     format_func=lambda x: {
                         "factual_error": "Factual error — stated something wrong",
                         "incomplete_answer": "Incomplete — missing key details",
@@ -150,10 +258,23 @@ with tab_chat:
                     }[x],
                     key="error_type_select",
                 )
-                correction = st.text_input(
-                    "Type the correct answer:", key="correction_input"
+
+                correction = st.text_area(
+                    "Correct answer:",
+                    value=suggested_correction,
+                    height=100,
+                    placeholder=(
+                        "Gemini pre-fills this when answer is wrong. "
+                        "You can edit before submitting."
+                    ),
+                    key="correction_input"
                 )
-                if st.button("Submit correction", type="secondary"):
+
+                if st.button(
+                    "Submit correction",
+                    type="secondary",
+                    key="submit_correction_btn"
+                ):
                     if correction.strip():
                         update_interaction_outcome(
                             st.session_state.interaction_id,
@@ -164,6 +285,8 @@ with tab_chat:
                         for lid in st.session_state.lesson_ids_used:
                             update_lesson_usage(lid, was_helpful=False)
                         st.session_state.feedback_given = True
+                        st.session_state.gemini_judgment = None
+                        st.session_state.judged_query = None
 
                         if should_reflect():
                             with st.spinner("Reflecting on recent failures..."):

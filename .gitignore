@@ -1,25 +1,36 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# ChromaDB data
 memory_agent_db/
+chroma_db/
+memory_db/
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
-.env
 *.egg-info/
 dist/
 build/
-.DS_Store
-Thumbs.db
+.pytest_cache/
 
-# Gemini and API keys
+# Environment and secrets
+.env
 *.env
 .env.local
 .env.production
 gemini_key.txt
 api_keys.txt
 
-# Python cache
-.pytest_cache/
+# Logs
+*.log
 
 # OS files
+.DS_Store
+Thumbs.db
 desktop.ini
 
 # Streamlit

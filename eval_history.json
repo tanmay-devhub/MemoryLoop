@@ -1,0 +1,30 @@
+[
+  {
+    "accuracy": 0.36,
+    "correct": 18,
+    "total": 50,
+    "timestamp": "2026-05-06 21:24:31",
+    "eval_set_name": "General (50 questions)"
+  },
+  {
+    "accuracy": 0.38,
+    "correct": 19,
+    "total": 50,
+    "timestamp": "2026-05-06 21:41:16",
+    "eval_set_name": "General (50 questions)"
+  },
+  {
+    "accuracy": 0.44,
+    "correct": 22,
+    "total": 50,
+    "timestamp": "2026-05-07 18:08:26",
+    "eval_set_name": "General (50 questions)"
+  },
+  {
+    "accuracy": 0.44,
+    "correct": 22,
+    "total": 50,
+    "timestamp": "2026-05-09 18:33:45",
+    "eval_set_name": "General (50 questions)"
+  }
+]

@@ -27,7 +27,11 @@ from memory import (
 )
 from reflection import reflect, should_reflect
 
-st.set_page_config(page_title="Memory Agent", page_icon="🧠", layout="wide")
+st.set_page_config(
+    page_title="MemoryLoop",
+    page_icon="🧠",
+    layout="wide"
+)
 
 # ── session state ─────────────────────────────────────────────────────────────
 if "interaction_id" not in st.session_state:
@@ -55,7 +59,7 @@ def _fmt_date(iso_str: str) -> str:
 
 
 # ── sidebar ───────────────────────────────────────────────────────────────────
-st.sidebar.title("Memory Agent")
+st.sidebar.title("MemoryLoop 🧠")
 st.sidebar.metric("Total Interactions", get_interaction_count())
 st.sidebar.metric("Total Lessons", get_lesson_count())
 st.sidebar.divider()
@@ -63,6 +67,10 @@ st.sidebar.info(
     "Ollama runs automatically on Windows. If errors appear, "
     "open PowerShell and run: ollama serve"
 )
+st.sidebar.divider()
+st.sidebar.caption("📚 Based on Reflexion (Stanford, 2023)")
+st.sidebar.caption("💰 Cost: $0.00 — fully local")
+st.sidebar.caption("🔗 github.com/tanmay-devhub/MemoryLoop")
 
 # ── tabs ──────────────────────────────────────────────────────────────────────
 tab_chat, tab_memory, tab_eval = st.tabs(["Chat", "Memory Browser", "Learning Curve"])

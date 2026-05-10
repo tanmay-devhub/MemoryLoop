@@ -1,42 +1,10 @@
-# ChromaDB persistent database (user data, not source)
 memory_agent_db/
-
-# Runtime-generated files
-eval_history.json
-
-# New eval sets are source — eval_set_*.json files are intentionally tracked
-
-# Python
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
-.Python
+.env
 *.egg-info/
 dist/
 build/
-.eggs/
-
-# Virtual environments
-.venv/
-venv/
-env/
-ENV/
-
-# sentence-transformers model cache
-.cache/
-*.bin
-*.safetensors
-
-# Streamlit
-.streamlit/secrets.toml
-
-# OS
 .DS_Store
 Thumbs.db
-desktop.ini
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo

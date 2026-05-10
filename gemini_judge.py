@@ -56,8 +56,7 @@ def get_gemini_model():
     try:
         genai.configure(api_key=api_key)
         return genai.GenerativeModel(
-            model_name='gemini-2.5-flash',
-            system_instruction=JUDGE_SYSTEM_PROMPT
+            model_name="gemini-2.5-flash", system_instruction=JUDGE_SYSTEM_PROMPT
         )
     except Exception as e:
         print(f"Gemini init error: {e}")
@@ -88,7 +87,7 @@ def judge_answer(question: str, agent_answer: str) -> dict:
             "error_type": None,
             "reasoning": "Gemini not configured",
             "confidence": 0.0,
-            "gemini_available": False
+            "gemini_available": False,
         }
 
     prompt = f"""EVALUATE THIS AGENT RESPONSE:
@@ -161,9 +160,9 @@ Respond with raw JSON only — no text before or after:
                         break
 
             if "{" in raw:
-                raw = raw[raw.index("{"):]
+                raw = raw[raw.index("{") :]
             if "}" in raw:
-                raw = raw[:raw.rindex("}")+1]
+                raw = raw[: raw.rindex("}") + 1]
 
             result = json.loads(raw.strip())
 
@@ -176,8 +175,11 @@ Respond with raw JSON only — no text before or after:
                 raise ValueError(f"Invalid judgment: {result['judgment']}")
 
             valid_errors = [
-                "factual_error", "incomplete_answer",
-                "wrong_complexity", "hallucination", None
+                "factual_error",
+                "incomplete_answer",
+                "wrong_complexity",
+                "hallucination",
+                None,
             ]
             if result.get("error_type") not in valid_errors:
                 result["error_type"] = "factual_error"
@@ -189,9 +191,7 @@ Respond with raw JSON only — no text before or after:
                 sentences = result["correction"].split(".")
                 sentences = [s.strip() for s in sentences if s.strip()]
                 if len(sentences) > 2:
-                    result["correction"] = (
-                        sentences[0] + ". " + sentences[1] + "."
-                    )
+                    result["correction"] = sentences[0] + ". " + sentences[1] + "."
 
             result["gemini_available"] = True
             return result
@@ -207,7 +207,7 @@ Respond with raw JSON only — no text before or after:
                     "error_type": None,
                     "reasoning": f"Judge failed: {str(e)[:50]}",
                     "confidence": 0.0,
-                    "gemini_available": True
+                    "gemini_available": True,
                 }
 
 
@@ -215,8 +215,7 @@ def validate_api_key(api_key: str) -> bool:
     try:
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel(
-            model_name='gemini-2.5-flash',
-            system_instruction=JUDGE_SYSTEM_PROMPT
+            model_name="gemini-2.5-flash", system_instruction=JUDGE_SYSTEM_PROMPT
         )
         response = model.generate_content(
             '{"judgment": "CORRECT", "correction": null, '

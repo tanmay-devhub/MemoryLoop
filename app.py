@@ -29,11 +29,7 @@ from reflection import reflect, should_reflect
 from gemini_judge import judge_answer, validate_api_key, is_gemini_configured
 import os
 
-st.set_page_config(
-    page_title="MemoryLoop",
-    page_icon="🧠",
-    layout="wide"
-)
+st.set_page_config(page_title="MemoryLoop", page_icon="🧠", layout="wide")
 
 # ── session state ─────────────────────────────────────────────────────────────
 if "interaction_id" not in st.session_state:
@@ -86,7 +82,7 @@ gemini_input = st.sidebar.text_input(
     type="password",
     value=os.environ.get("GEMINI_API_KEY", ""),
     help="Free at aistudio.google.com — no credit card needed",
-    key="gemini_api_input"
+    key="gemini_api_input",
 )
 if gemini_input:
     os.environ["GEMINI_API_KEY"] = gemini_input
@@ -157,20 +153,20 @@ with tab_chat:
                 st.caption("No memories retrieved yet — keep chatting and correcting")
 
         # ── Gemini Auto-Judge ──────────────────────────────────────────────────
-        if (st.session_state.last_answer
-                and is_gemini_configured()
-                and not st.session_state.feedback_given):
+        if (
+            st.session_state.last_answer
+            and is_gemini_configured()
+            and not st.session_state.feedback_given
+        ):
 
             query_changed = (
-                st.session_state.get("judged_query")
-                != st.session_state.last_query
+                st.session_state.get("judged_query") != st.session_state.last_query
             )
 
-            if (st.session_state.gemini_judgment is None or query_changed):
+            if st.session_state.gemini_judgment is None or query_changed:
                 with st.spinner("Gemini 2.5 Flash analyzing answer..."):
                     judgment = judge_answer(
-                        st.session_state.last_query,
-                        st.session_state.last_answer
+                        st.session_state.last_query, st.session_state.last_answer
                     )
                 st.session_state.gemini_judgment = judgment
                 st.session_state.judged_query = st.session_state.last_query
@@ -197,9 +193,7 @@ with tab_chat:
                         f"{j.get('reasoning', 'unknown error')}"
                     )
             elif j and not j.get("gemini_available"):
-                st.caption(
-                    "💡 Add Gemini API key in sidebar for auto-judgment"
-                )
+                st.caption("💡 Add Gemini API key in sidebar for auto-judgment")
         # ── End Gemini Auto-Judge ──────────────────────────────────────────────
 
         if not st.session_state.feedback_given and st.session_state.interaction_id:
@@ -222,8 +216,7 @@ with tab_chat:
                 j = st.session_state.get("gemini_judgment") or {}
 
                 gemini_wrong = (
-                    j.get("gemini_available")
-                    and j.get("judgment") == "INCORRECT"
+                    j.get("gemini_available") and j.get("judgment") == "INCORRECT"
                 )
                 suggested_error = j.get("error_type") or "factual_error"
                 suggested_correction = j.get("correction") or ""
@@ -232,7 +225,7 @@ with tab_chat:
                     "factual_error",
                     "incomplete_answer",
                     "wrong_complexity",
-                    "hallucination"
+                    "hallucination",
                 ]
                 default_index = (
                     error_options.index(suggested_error)
@@ -242,8 +235,7 @@ with tab_chat:
 
                 if gemini_wrong and suggested_correction:
                     st.caption(
-                        "✨ Pre-filled by Gemini 2.5 Flash — "
-                        "review and confirm"
+                        "✨ Pre-filled by Gemini 2.5 Flash — " "review and confirm"
                     )
 
                 error_type = st.selectbox(
@@ -267,13 +259,11 @@ with tab_chat:
                         "Gemini pre-fills this when answer is wrong. "
                         "You can edit before submitting."
                     ),
-                    key="correction_input"
+                    key="correction_input",
                 )
 
                 if st.button(
-                    "Submit correction",
-                    type="secondary",
-                    key="submit_correction_btn"
+                    "Submit correction", type="secondary", key="submit_correction_btn"
                 ):
                     if correction.strip():
                         update_interaction_outcome(
@@ -314,7 +304,9 @@ with tab_memory:
     st.subheader("Confidence Analysis")
     stats = get_confidence_stats()
     if stats["total_scored"] == 0:
-        st.caption("No scored interactions yet. Mark responses as correct or incorrect in the Chat tab.")
+        st.caption(
+            "No scored interactions yet. Mark responses as correct or incorrect in the Chat tab."
+        )
     else:
         sc1, sc2, sc3, sc4 = st.columns(4)
         sc1.metric(
@@ -351,9 +343,7 @@ with tab_memory:
         )
         st.bar_chart(df_bd)
         most_common = max(breakdown.items(), key=lambda x: x[1])
-        st.caption(
-            f"Most common error: **{most_common[0]}** ({most_common[1]} times)"
-        )
+        st.caption(f"Most common error: **{most_common[0]}** ({most_common[1]} times)")
     else:
         st.caption("No corrections submitted yet.")
 
@@ -363,7 +353,13 @@ with tab_memory:
 
     filter_type = st.selectbox(
         "Filter by error type:",
-        options=["All", "factual_error", "incomplete_answer", "wrong_complexity", "hallucination"],
+        options=[
+            "All",
+            "factual_error",
+            "incomplete_answer",
+            "wrong_complexity",
+            "hallucination",
+        ],
         key="lesson_filter",
     )
 
@@ -496,7 +492,9 @@ with tab_eval:
         st.subheader("Topic Weakness Analysis")
         latest_by_set: dict[str, float] = {}
         for record in history:
-            latest_by_set[record.get("eval_set_name", "General (50 questions)")] = record["accuracy"]
+            latest_by_set[record.get("eval_set_name", "General (50 questions)")] = (
+                record["accuracy"]
+            )
 
         metric_cols = st.columns(len(EVAL_SETS))
         for idx, (name, _) in enumerate(EVAL_SETS.items()):

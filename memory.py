@@ -15,6 +15,7 @@ _interactions_col = _client.get_or_create_collection("interactions")
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
+
 def _embed(text: str) -> list[float]:
     return _embedder.encode(text).tolist()
 
@@ -35,6 +36,7 @@ def _safe_int(value) -> int:
 
 # ── lessons ───────────────────────────────────────────────────────────────────
 
+
 def store_lesson(content: str, error_type: str) -> str:
     lesson_id = str(uuid.uuid4())
     try:
@@ -42,13 +44,15 @@ def store_lesson(content: str, error_type: str) -> str:
             ids=[lesson_id],
             embeddings=[_embed(content)],
             documents=[content],
-            metadatas=[{
-                "error_type": error_type,
-                "last_used_at": datetime.now().isoformat(),
-                "usefulness_score": "0.0",
-                "is_active": "true",
-                "times_retrieved": "0",
-            }],
+            metadatas=[
+                {
+                    "error_type": error_type,
+                    "last_used_at": datetime.now().isoformat(),
+                    "usefulness_score": "0.0",
+                    "is_active": "true",
+                    "times_retrieved": "0",
+                }
+            ],
         )
     except Exception:
         pass
@@ -76,13 +80,17 @@ def retrieve_lessons(query: str, n: int = 3) -> list[dict]:
             if meta.get("is_active", "true") != "true":
                 continue
             lesson_id = results["ids"][0][i]
-            lessons.append({
-                "id": lesson_id,
-                "content": doc,
-                "usefulness_score": _safe_float(meta.get("usefulness_score", "0.0")),
-                "times_retrieved": _safe_int(meta.get("times_retrieved", "0")),
-                "last_used_at": meta.get("last_used_at", ""),
-            })
+            lessons.append(
+                {
+                    "id": lesson_id,
+                    "content": doc,
+                    "usefulness_score": _safe_float(
+                        meta.get("usefulness_score", "0.0")
+                    ),
+                    "times_retrieved": _safe_int(meta.get("times_retrieved", "0")),
+                    "last_used_at": meta.get("last_used_at", ""),
+                }
+            )
             update_lesson_usage(lesson_id, was_helpful=None)
             if len(lessons) >= n:
                 break
@@ -206,6 +214,7 @@ def get_lesson_count() -> int:
 
 # ── interactions ──────────────────────────────────────────────────────────────
 
+
 def store_interaction(
     query: str,
     response: str,
@@ -265,12 +274,16 @@ def get_recent_failures(n: int = 10) -> list[dict]:
         all_items = _interactions_col.get(include=["documents", "metadatas"])
         failures = []
         for doc, meta in zip(all_items["documents"], all_items["metadatas"]):
-            if meta.get("outcome") in ("incorrect", "corrected") and meta.get("correction"):
-                failures.append({
-                    "query": meta.get("query", ""),
-                    "response": doc,
-                    "correction": meta.get("correction", ""),
-                })
+            if meta.get("outcome") in ("incorrect", "corrected") and meta.get(
+                "correction"
+            ):
+                failures.append(
+                    {
+                        "query": meta.get("query", ""),
+                        "response": doc,
+                        "correction": meta.get("correction", ""),
+                    }
+                )
         return failures[-n:]
     except Exception:
         return []
@@ -282,7 +295,8 @@ def get_failure_count() -> int:
             return 0
         all_items = _interactions_col.get(include=["metadatas"])
         return sum(
-            1 for m in all_items["metadatas"]
+            1
+            for m in all_items["metadatas"]
             if m.get("outcome") in ("incorrect", "corrected")
         )
     except Exception:
@@ -333,9 +347,17 @@ def get_confidence_stats() -> dict:
                     overconfident += 1
 
         return {
-            "avg_confidence": round(sum(all_conf) / len(all_conf), 4) if all_conf else 0.0,
-            "avg_confidence_correct": round(sum(correct_conf) / len(correct_conf), 4) if correct_conf else 0.0,
-            "avg_confidence_incorrect": round(sum(incorrect_conf) / len(incorrect_conf), 4) if incorrect_conf else 0.0,
+            "avg_confidence": (
+                round(sum(all_conf) / len(all_conf), 4) if all_conf else 0.0
+            ),
+            "avg_confidence_correct": (
+                round(sum(correct_conf) / len(correct_conf), 4) if correct_conf else 0.0
+            ),
+            "avg_confidence_incorrect": (
+                round(sum(incorrect_conf) / len(incorrect_conf), 4)
+                if incorrect_conf
+                else 0.0
+            ),
             "overconfident_count": overconfident,
             "underconfident_count": underconfident,
             "total_scored": scored,

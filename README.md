@@ -2,7 +2,8 @@
 
 > A self-improving AI agent that learns from its own mistakes
 > using persistent vector memory and async reflection loops.
-> Built with Ollama + ChromaDB. Zero API cost.
+> Core agent runs locally with Ollama.
+> Optional Gemini judge uses free-tier API key.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Ollama](https://img.shields.io/badge/Ollama-llama3.2-green)
@@ -185,7 +186,7 @@ Also draws from **MemGPT / Letta** (Packer et al., 2023):
 | Vector store | ChromaDB (persistent) | Lesson + interaction memory |
 | UI | Streamlit | 3-tab dashboard |
 | Language | Python 3.10+ | Backend + agent logic |
-| Cost | $0.00 | Fully local, no API keys |
+| Cost | $0.00 | Core agent fully local; Gemini judge optional (free tier) |
 | Auto-Judge | Gemini 2.5 Flash | Precision answer evaluation + training data generation |
 
 ---
@@ -196,7 +197,7 @@ Also draws from **MemGPT / Letta** (Packer et al., 2023):
 # Prerequisites: Python 3.10+, Ollama installed
 ollama pull llama3.2
 
-cd memory-agent
+cd MemoryLoop
 pip install -r requirements.txt
 streamlit run app.py
 ```
@@ -252,7 +253,6 @@ via system prompt produced corrections that were 3-4x more
 specific and actionable than unguided generation.
 
 ---
-
 
 ## License
 

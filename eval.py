@@ -64,7 +64,9 @@ def evaluate_single(q: dict) -> dict:
     }
 
 
-def compile_results(results: list, eval_set_name: str = "General (50 questions)") -> dict:
+def compile_results(
+    results: list, eval_set_name: str = "General (50 questions)"
+) -> dict:
     total = len(results)
     correct = sum(1 for r in results if r["correct"])
     accuracy = correct / total if total > 0 else 0.0
